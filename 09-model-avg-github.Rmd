@@ -1,6 +1,6 @@
 ---
 title: "Exercise: Model Averaging and GitHub"
-author: "Your Name"
+author: "Vahan Aslanyan"
 date: "11/04/2021"
 output:
   github_document:
@@ -76,7 +76,37 @@ m4 <- lmer(mAch ~ (minrty_cm + minrty) * (ses_cm + ses_cmc) +
 AIC(m1, m2, m3, m4)  # marginal AIC
 ```
 
-Fill in the blank: Model ____ appears to have the best out-of-sample prediction accuracy?
+```{r}
+# Prediction error from m1
+pred_all <- predict(m1,
+    newdata = hsbsub, re.form = NA,
+    allow.new.levels = TRUE
+)
+prederr_all <- hsbsub$mAch - pred_all
+mse_m1 <- mean(prederr_all^2, na.rm = TRUE)
+pred_all <- predict(m2,
+    newdata = hsbsub, re.form = NA,
+    allow.new.levels = TRUE
+)
+prederr_all <- hsbsub$mAch - pred_all
+mse_m2 <- mean(prederr_all^2, na.rm = TRUE)
+pred_all <- predict(m3,
+    newdata = hsbsub, re.form = NA,
+    allow.new.levels = TRUE
+)
+prederr_all <- hsbsub$mAch - pred_all
+mse_m3 <- mean(prederr_all^2, na.rm = TRUE)
+pred_all <- predict(m4,
+    newdata = hsbsub, re.form = NA,
+    allow.new.levels = TRUE
+)
+prederr_all <- hsbsub$mAch - pred_all
+mse_m4 <- mean(prederr_all^2, na.rm = TRUE)
+tibble(Model = c("M1", "M2","M3","M4"), 
+       `Out-of-sample MSE` = c(mse_m1, mse_m2,mse_m3,mse_m4))
+```
+
+Fill in the blank: Model 4 appears to have the best out-of-sample prediction accuracy?
 
 ## Averaging M1, M2, M3, and M4
 
@@ -88,7 +118,7 @@ where $\Delta_m = \text{AIC}_m - \text{AIC}_\text{min}$ is the difference betwee
 model.sel(m1, m2, m3, m4, rank = "AIC")  # see the last column
 ```
 
-Fill in the blank: Model ____ has the highest weight
+Fill in the blank: Model 1 has the highest weight
 
 To average the models, we use
 
@@ -155,6 +185,6 @@ The following shows the variance importance of the predictors. It adds up the we
 importance(m_avg2)
 ```
 
-Fill in the blanks: Aside from `ses_cm` and `ses_cmc`, ______ are the most important for predicting `mAch`, while _____ is the least important?
+Fill in the blanks: Aside from `ses_cm` and `ses_cmc`, minrty, sx and sx_cm are the most important for predicting `mAch`, while minrty_cm  is the least important?
 
 To learn more about averaging, check out this paper: https://www.sciencedirect.com/science/article/pii/S0022249699912786
